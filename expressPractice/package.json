@@ -1,0 +1,16 @@
+{
+  "name": "expressPractice",
+  "version": "1.0.0",
+  "description": "practice express framework",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "author": "lzpeng",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.18.3",
+    "express": "^4.16.3",
+    "joi": "^13.5.2"
+  }
+}
