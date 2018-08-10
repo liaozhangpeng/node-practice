@@ -1,10 +1,13 @@
 const config = require('config');
+const startupDebugger = require('debug')('myApp:startup'); // debugger
+const dbDebugger = require('debug')('myApp:db');
 const Joi = require('joi'); //input validation
 const express = require('express');
 const app = express();
 const logger = require('./logger'); // import custom middleware
-var bodyParser = require('body-parser'); // getting body parameters through POST method
-const morgan = require('morgan');
+const bodyParser = require('body-parser'); // getting body parameters through POST method
+const morgan = require('morgan');   // get request detail, time,content
+const home = require('./routes/home');
 
 console.log("Current NODE_ENV: "+process.env.NODE_ENV);
 console.log("app: "+app.get('env'));
@@ -16,6 +19,7 @@ app.use(bodyParser.urlencoded({ extended: true }));
 app.use(logger); // custom middleware
 app.use(express.static('myPublic'));
 
+app.use('/',home);
 
 //Configuration
 console.log("----- configuration -----");
@@ -29,31 +33,17 @@ if(app.get('env') === 'development'){
 console.log("NODE_ENV: "+config.get('name'));
 console.log("host: "+config.get('mail.host'));
 
+//set environment password: $evn:app_password='12345678abcdefg'
+//set password in the custom-environment-variables.json file
+// console.log("the app_password: "+config.get("mail.password"));
+console.log("--------------------------")
+
+//using debug, set environment DEBUG, eg: $env:DEBUG='myApp:*' , myApp is prefix
+startupDebugger('reach 1');
+dbDebugger('reach 2');
 
 // app.use(express.json());
 
-app.get('/', function(req,res){
-    res.send("<h1>hello express " + req.query['name']+"</h1>");
-});
-
-app.post('/',(req,res)=>{
-    console.log("reach post")
-    const schema = {
-        userName: Joi.string().min(6).max(15).required(),
-        passCode: Joi.number().min(6).max(10).required()
-    };
-    
-    var {error} = Joi.validate(req.body, schema);
-    if(error){
-        console.log(error);
-        return res.status(400).send("<h1>"+error.details[0].message+"</h1>");
-    }
-
-    // console.log(req.body);
-    // return res.status(200).send(req.body);
-    
-
-});
 
 const port = process.env.PORT || 2000;
 app.listen(port, ()=>{
